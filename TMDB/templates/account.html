@@ -1,0 +1,135 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+       <div class="profile_div">
+            <div class="profile_username">
+              <div class="profile_list_div">
+                <h1 style="text-align:center;"><i>Movie and Show Statistics for:</i></h1>
+              </div>
+                <div class="profile_list_div">
+                    <h2 style="text-align: center;"><i>{{user.username}}</i></h2>
+                </div>
+                <div class="profile_list_div">
+                    <a href="" class="profile_general_text" data-toggle="modal" data-backdrop="static" data-target="#user_reviews">My Reviews</a>
+                    <div class="modal fade" id="user_reviews" tabindex="-1" role="dialog" aria-labelledby="userReviewModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                               <h5>Your Reviews</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                              <div class="modal-body">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                      <div id="movie_modal_tab" class="nav-link active" aria-current="page" onclick="showMovieReviewTab()">Movie ({{movie_reviews.count}})</div>
+                                    </li>
+                                    <li class="nav-item">
+                                      <div id="tv_modal_tab" class="nav-link" onclick="showTvReviewTab()">TV Shows ({{tv_reviews.count}})</div>
+                                    </li>
+                                  </ul>
+                                <div id="movie_review_tab" >
+                                  <table class="table table-hover table-dark">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Movie Name</th>
+                                        <th scope="col">Score</th>
+                                        <th scope="col">Review Date</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for movie_review in movie_reviews %}
+                                      <tr>
+                                        <th scope="row"><a href="/media/movie/{{movie_review.movie_id.movie_id}}/" style="color:white;">{{movie_review.movie_id.movie_name}}</a></th>
+                                        <td>{{movie_review.score}}/10</td>
+                                        <td>{{movie_review.review_date}}</td>
+                                    
+                                      </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                  </table>
+                                  
+                                </div>
+                                <div id="tv_review_tab" hidden >
+                                  <table class="table table-hover table-dark">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">TV Show Name</th>
+                                        <th scope="col">Score</th>
+                                        <th scope="col">Review Date</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for tv_review in tv_reviews %}
+                                      <tr>
+                                        <th scope="row"><a href="/media/tv/{{tv_review.tv_id.tv_id}}" style="color:white;">{{tv_review.tv_id.tv_name}}</a></th>
+                                        <td>{{tv_review.score}}/10</td>
+                                        <td>{{tv_review.review_date}}</td>
+                                 
+                                      </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                  </table>
+                                </div>
+
+                              </div>
+                              <div class="modal-footer" hidden>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                <div class="profile_list_div">
+                    <a href="{% url 'movie_watchlist' user %}" class="profile_general_text">My Movie Watchlist</a>
+                </div>
+                <div class="profile_list_div">
+                  <a href="{% url 'tv_watchlist' user %}" class="profile_general_text">My TV Watchlist</a>
+                </div>
+            </div>
+            <div id="stat_div">
+                <div class="media_stat_div movie_stat">
+                    <div class="stats movie_stats">
+                        <p class="p_stat">
+                            Movies currently watching: {{movies_watching.count}}
+                        </br>
+                            Movies watched: {{movies_watched.count}}
+                        </br>
+                            Movies planning to watch: {{movies_planned_watching.count}}
+                        </p>
+                    </div>
+                    <div class="stat_chart">   
+                        <canvas id="movie_chart" style="width:400px;max-width:500px">
+                            <div hidden id="movie_pie_genre_names">{{movie_pie_genre_names}}</div>
+                            <div hidden id="movie_pie_genre_numbers">{{movie_pie_genre_numbers}}</div>
+                        </canvas>  
+                    </div>
+                </div>
+                <div class="media_stat_div tv_stat">
+                    <div class ="stats tv_stats">
+                        <p class="p_stat">
+                            TV shows currently watching: {{tv_watching.count}}
+                        </br>
+                            TV shows watched: {{tv_watched.count}}
+                        </br>
+                            TV shows planned to watch: {{tv_planned_watching.count}}
+                        </p>
+                    </div>
+                    <div class="stat_chart">
+                        <canvas id="tv_chart" style="width:400px;max-width:500px">
+                            <div hidden id="tv_pie_genre_names">{{tv_pie_genre_names}}</div>
+                            <div hidden id="tv_pie_genre_numbers">{{tv_pie_genre_numbers}}</div>
+                        </canvas>
+                    </div> 
+                    
+                </div>
+            </div>
+            
+            
+       </div>
+    {% endif %}
+{% endblock %}

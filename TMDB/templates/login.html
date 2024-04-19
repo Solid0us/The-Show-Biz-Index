@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block body %}
+    {% if message %}
+        {{ message }}
+    {% endif %}
+    <h1 class="unauthenticated_title">Login</h1>
+    <form action="{% url 'login_view' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <input class="btn btn-primary" type="submit" value="Login">
+    </form>
+{% endblock %}

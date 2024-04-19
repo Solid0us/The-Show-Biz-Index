@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        <h1 class="media-scroller-title">What's Trending</h1>
+        <div class="media-scroller"> 
+            {% for media in trending_results %}
+                {% if media.title %}
+                    <a href="{% url 'media_page' media_type=media.media_type media_id=media.id %}" class="media-link">
+                        <div class="media-element" id="media-element-{{media.id}}">
+                                <img src="{{backdrop_url}}{{media.poster_path}}">
+                                <p>{{forloop.counter}}. {{media.title}} </p>
+                        </div>
+                    </a>
+                <!--TMDB does not include 'title' in TV shows. Need to use media.name instead.-->
+                {% elif media.name %}
+                    <a href="{% url 'media_page' media_type=media.media_type media_id=media.id %}" class="media-link">
+                        <div class="media-element" id="media-element-{{media.id}}">
+                                <img src="{{backdrop_url}}{{media.poster_path}}">
+                                <p>{{forloop.counter}}. {{media.name}} </p>
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if top_3_genres|length == 0 %}
+            <div>empty</div>
+        {% else %}
+        <div class="section_divider">Your Top Watched Genres</div>
+        {% for genre in top_3_genres %}
+            <h1 class="media-scroller-title">{{genre.0}}</h1>
+            <div class="media-scroller"> 
+                {% for media in genre.2 %}
+                    {% if media.title %}
+                        <a href="{% url 'media_page' media_type=media.media_type media_id=media.id %}" class="media-link">
+                            <div class="media-element" id="media-element-{{media.id}}">
+                                    {% if media.poster_path %}
+                                    <img src="{{backdrop_url}}{{media.poster_path}}">
+                                    {% else %}
+                                    <img src="https://cdn.vectorstock.com/i/preview-1x/48/06/image-preview-icon-picture-placeholder-vector-31284806.jpg">
+                                    {% endif %}
+                                    <p>{{forloop.counter}}. {{media.title}} </p>
+                            </div>
+                        </a>
+                    <!--TMDB does not include 'title' in TV shows. Need to use media.name instead.-->
+                    {% elif media.name %}
+                        <a href="{% url 'media_page' media_type=media.media_type media_id=media.id %}" class="media-link">
+                            <div class="media-element" id="media-element-{{media.id}}">
+                                    {% if media.poster_path %}
+                                    <img src="{{backdrop_url}}{{media.poster_path}}">
+                                    {% else %}
+                                    <img src="https://cdn.vectorstock.com/i/preview-1x/48/06/image-preview-icon-picture-placeholder-vector-31284806.jpg">
+                                    {% endif %}
+                                    <p>{{forloop.counter}}. {{media.name}} </p>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% endif %}
+    {% else %}
+    <h1 class="unauthenticated_title">Please Log in to View Content</h1>
+    {% endif %}
+{% endblock %}

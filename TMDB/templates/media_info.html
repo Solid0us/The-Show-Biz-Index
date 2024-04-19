@@ -1,0 +1,170 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+    <div class="media_content_div">
+        <div class="media_title_div">
+            {% if media.poster_path != None %}
+            <img src="{{backdrop_url}}/{{media.poster_path}}">
+            {% else %}
+            <img src="{{empty_poster_url}}">
+            {% endif %}
+        </div>
+        <div class="media_info_div">
+                {% if media_type == 'tv' %}
+                    <h1>{{media.name}}</h1>
+                {% else %}
+                    <h1>{{media.title}}</h1>
+                {% endif %}
+            <p>
+                <b>Overview:</b>
+                </br>
+                {{media.overview}}
+            </p>
+            <div class="media_info_inner1_div">
+                <p>
+                    <b>Languages: </b>
+                    {% for language in media.spoken_languages %}
+                        <!--Check if last item in for loop-->
+                        {% if forloop.last %}
+                            {{language.english_name}}
+                        {% else %}
+                            {{language.english_name}},
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                {% if average_score == "No reviews" %}
+                <p>No reviews</p>
+                {% else %}
+                <a id="average_score" style="margin-right: 20px;">Average Score: {{average_score}}</a>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target=".reviews_modal">All Reviews</button>
+
+                <div class="modal fade reviews_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      {% for review in reviews %}
+                        <container class="container-fluid p-3 my-3 bg-dark text-white">
+                          <div class="name_review_div">
+                            <h2>{{review.reviewer}}</h2>
+                            <h3>{{review.score}}/10</h3>
+                            <h6>{{review.review_date}}</h6>
+                          </div>
+                          <div class="regular_text">
+                            {% if review.review %}
+                              <p>{{review.review}}</p>
+                          {% else %}
+                              <p>N/A</p>
+                          {% endif %}
+                          </div>
+                          
+                        </container>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                
+                  
+                  <div id="user_review_div">
+                    <!--Insert Score here-->
+                    {% if reviewed %}
+                    <a href="" class="general_elements" data-toggle="modal" data-backdrop="static" data-target="#editReviewModal" id="viewEdit">Your score: {{user_review_score}}/10</a>
+                    <div class="modal fade" id="editReviewModal" tabindex="-1" role="dialog" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              {% if media_type == 'tv' %}
+                              <h5 class="modal-title" id="viewReviewModalLabel">{{request.user}}'s' review for <b>{{media.name}}</b></h5>
+                              <h5 class="modal-title" id="editReviewModalLabel" hidden>Editing review for <b>{{media.name}}</b></h5>
+                              {% else %}
+                              <h5 class="modal-title" id="viewReviewModalLabel">{{request.user}}'s review for <b>{{media.title}}</b></h5>
+                              <h5 class="modal-title" id="editReviewModalLabel" hidden>Editing review for <b>{{media.title}}</b></h5>
+                              {% endif %}
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="resetEditReview()">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                            <div class="modal-body">
+                              <label id="review_score_label" for="edit_review_score" hidden>Rate 1-10</label>
+                              <select class="general_elements" type="number" id="edit_review_score" min="1" max="10" hidden>
+                                <option value=1>1 - Abysmal</option>
+                                <option value=2>2 - Very Bad</option>
+                                <option value=3>3 - Bad</option>
+                                <option value=4>4 - Subpar</option>
+                                <option value=5>5 - Fair</option>
+                                <option value=6>6 - Good</option>
+                                <option value=7>7 - Great</option>
+                                <option value=8>8 - Very Good</option>
+                                <option value=9>9 - Excellent</option>
+                                <option value=10>10 - Perfect</option>
+                              </select>
+                              <textarea readonly placeholder="Write a review" class="review_textarea" id="edit_review_textarea">{{user_review_text}}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="resetEditReview()" >Close</button>
+                              <button type="button" id="show_edit" class="btn btn-primary" onclick="showEditReview('{{user_review_score}}')">Edit Review</button>
+                              <button hidden type="submit" id="editReviewBtn" class="btn btn-primary" data-dismiss="modal" onclick="editReview('{{media_type}}', '{{media_id}}')">Submit Changes</button>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    {% else %}
+                    <button type="button" class="btn btn-secondary general_elements" data-toggle="modal" data-target="#reviewModal">Write a Review</button>
+                    {% endif %}
+                  </div>
+                <div class="inline-row">
+                  <select id="select_watchlist" class="form-select general_elements" aria-label="Default select example" onchange="addList('{{media_type}}','{{media_id}}')">
+                    <option selected>Select Watchlist Status</option>
+                    <option value="watching">Watching</option>
+                    <option value="completed">Completed</option>
+                    <option value="plan_to_watch">Plan to Watch</option>
+                    <option value="remove_watch_status">Remove from List</option>
+                  </select>  
+                  <p id="watch_status_p" class="general_elements" style="margin-left: 10px;">{{watch_status}}</p>
+                </div>
+                
+            </div>
+            <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                        {% if media_type == 'tv' %}
+                      <h5 class="modal-title" id="reviewModalLabel">Write a review for <b>{{media.name}}</b></h5>
+                      {% else %}
+                      <h5 class="modal-title" id="reviewModalLabel">Write a review for <b>{{media.title}}</b></h5>
+                      {% endif %}
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                      <div class="modal-body">
+                        <label for="review_score">Rate 1-10</label>
+                        <select type="number" id="review_score" min="1" max="10">
+                          <option value=1>1 - Abysmal</option>
+                          <option value=2>2 - Very Bad</option>
+                          <option value=3>3 - Bad</option>
+                          <option value=4>4 - Subpar</option>
+                          <option value=5>5 - Fair</option>
+                          <option value=6>6 - Good</option>
+                          <option value=7>7 - Great</option>
+                          <option value=8>8 - Very Good</option>
+                          <option value=9>9 - Excellent</option>
+                          <option value=10>10 - Perfect</option>
+                        </select>
+                        <textarea placeholder="Write a review" class="review_textarea" id="review_textarea"></textarea>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+                        <button type="submit" class="btn btn-primary" data-dismiss="modal" onclick="addReview('{{media_type}}', '{{media_id}}')">Submit Review</button>
+                      </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+
+        
+    {% endif %}
+{% endblock %}

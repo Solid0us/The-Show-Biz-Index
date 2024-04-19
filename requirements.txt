@@ -1,0 +1,6 @@
+Required modules:
+1. Django
+2. json
+3. requests
+4. collections
+5. datetime

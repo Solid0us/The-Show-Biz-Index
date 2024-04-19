@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+    <div hidden="true" id="total_pages">{{total_pages}}</div>
+    <div hidden="true" id="search_query">{{search_query}}</div>
+    <container id="search_container">
+        {% for results in search_results %}
+        {% if results.media_type != 'person' and results.media_type != 'collection' %}
+            <div class="search_results_div">
+                    <a href="{% url 'media_page' media_type=results.media_type media_id=results.id  %}" class="a_results">
+                        <div class="search_results_title">
+                        {% if results.media_type == 'tv' %}
+                            {{results.name}}
+                        {% else %}
+                            {{results.title}}
+                        {% endif %}
+                        </div>
+                        <div class="search_results_poster">
+                            {% if results.poster_path %}
+                            <img src="{{backdrop_url}}{{results.poster_path}}">
+                            {% else %}
+                            <img src="{{empty_poster_url}}">
+                            {% endif %}
+                        </div>
+                    </a>
+            </div>
+            {% endif %}
+            {% empty %}
+            <p>No Search results</p>
+            {% endfor %}
+    </container>
+    
+    {% else %}
+    <h1 class="unauthenticated_title">Please Log in to View Content</h1>
+    {% endif %}
+    
+{% endblock %}

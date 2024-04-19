@@ -1,0 +1,136 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <div id="movie_watching_tab" class="nav-link active" style="color:black;" aria-current="page">Watching</div>
+      </li>
+      <li class="nav-item">
+        <div id="movies_planned_tab" class="nav-link" style="color:white;">Planned to Watch</div>
+      </li>
+      <li class="nav-item">
+        <div id="movie_completed_tab" class="nav-link" style="color:white;" href="#">Completed</div>
+      </li>
+      
+    </ul>
+    <div style="background-color: white;">
+      <div id="watching_div">
+        <table class="table table-striped table-success">
+          <thead>
+            <tr>
+              <th scope="col">Movie Name</th>
+              <th scope="col">Genres</th>
+              <th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for movie in movies_watching %}
+            <tr>
+              <th scope="row" class = "watchlist_media_name">
+                <a href="/media/movie/{{movie.movie_id}}/" style="color:black;">{{movie.movie_name}}</a>
+                <img class = "watchlist_poster" src="{{movie.backdrop_url}}">
+              </th>
+              <td>
+                {% for genre in movie.movie_genre.all %}
+                  {% if forloop.last %}
+                    {{genre.genre}}
+                  {% else %}
+                    {{genre.genre}},&nbsp;
+                  {% endif %}
+                {% endfor %}
+              </td>
+              <td class="watchlist_score">
+                {% for review in movie_reviews %}
+                  {% if review.movie_id == movie.movie_id %}
+                    {{review.score}}/10
+                  {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div hidden id="planned_div" onclick="movieWatchListTabToggle()">
+        <table class="table table-striped table-success">
+          <thead>
+            <tr>
+              <th scope="col">Movie Name</th>
+              <th scope="col">Genres</th>
+              <th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for movie in movies_planned_watching %}
+            <tr>
+              <th scope="row" class = "watchlist_media_name">
+                <a href="/media/movie/{{movie.movie_id}}/" style="color:black;">{{movie.movie_name}}</a>
+                <img class = "watchlist_poster" src="{{movie.backdrop_url}}">
+              </th>
+              <td>
+                {% for genre in movie.movie_genre.all %}
+                  {% if forloop.last %}
+                    {{genre.genre}}
+                  {% else %}
+                    {{genre.genre}},&nbsp;
+                  {% endif %}
+                {% endfor %}
+              </td>
+              <td class="watchlist_score">
+                {% for review in movie_reviews %}
+                  {% if review.movie_id == movie.movie_id %}
+                    {{review.score}}/10
+                  {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div hidden id="completed_div" onclick="movieWatchListTabToggle()">
+        <table class="table table-striped table-success">
+          <thead>
+            <tr>
+              <th scope="col">Movie Name</th>
+              <th scope="col">Genres</th>
+              <th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for movie in movies_watched %}
+            <tr>
+              <th scope="row" class = "watchlist_media_name">
+                <a href="/media/movie/{{movie.movie_id}}/" style="color:black;">{{movie.movie_name}}</a>
+                <img class = "watchlist_poster" src="{{movie.backdrop_url}}">
+              </th>
+              <td>
+                {% for genre in movie.movie_genre.all %}
+                  {% if forloop.last %}
+                    {{genre.genre}}
+                  {% else %}
+                    {{genre.genre}},&nbsp;
+                  {% endif %}
+                {% endfor %}
+              </td>
+              <td class="watchlist_score">
+                {% for review in movie_reviews %}
+                  {% if review.movie_id == movie.movie_id %}
+                    {{review.score}}/10
+                  {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+
+        
+    {% endif %}
+{% endblock %}
